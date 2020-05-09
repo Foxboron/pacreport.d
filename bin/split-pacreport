@@ -1,0 +1,21 @@
+#!/bin/awk -f
+# split-pacreport
+
+/^\[/{
+    header = $1
+}
+
+!(/^#/ || /^\[/) && NF{
+    if($1 != prev)
+        printed = 0
+
+    filename = sprintf("50-%s.conf", $1)
+
+    if(!printed){
+        print header > filename
+        printed = 1
+    }
+
+    print $0 >> filename
+    prev = $1
+}

@@ -1,0 +1,16 @@
+pkgname=pacreport.d
+pkgver=1.1
+pkgrel=1
+pkgdesc='Known ghost files for Arch Linux'
+arch=('any')
+depends=('pacutils')
+source=('git+https://github.com/foxboron/pacman.d.git?signed')
+validpgpkeys=('C100346676634E80C940FB9E9C02FF419FECBE16')
+sha256sums=('SKIP')
+
+package() {
+    install -Dm0755 generate-pacreport "$pkgdir"/usr/bin/generate-pacreport
+    install -Dm0755 generate-pacreport.hook "$pkgdir"/usr/share/libalpm/hooks/generate-pacreport.hook
+    install -Dm0644 -t "$pkgdir"/usr/share/pacreport.d 50-*.conf
+}
+

@@ -1,0 +1,12 @@
+[Trigger]
+Operation = Install
+Operation = Upgrade
+Type = File
+Target = usr/share/pacreport.d/*
+Target = etc/pacreport.d/*
+
+[Action]
+Description = Generating /etc/pacreport.conf
+Depends = pacutils
+When = PostTransaction
+Exec = /usr/bin/generate-pacreport
