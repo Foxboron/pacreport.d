@@ -2,8 +2,6 @@
 # generate-pacreport - generate /etc/pacreport.conf from files in /etc/pacreport.d
 # requires pacutils mktemp
 
-# pacini merge sections https://github.com/andrewgregory/pacutils/issues/38
-
 argv0=generate-pacreport
 
 conf=/etc/pacreport.conf
@@ -22,16 +20,21 @@ if [ -f "$conf" ]; then
 fi
 
 tmp=$(mktemp "$argv0"-XXXX)
-trap 'rm -f -- "$tmp"' EXIT
 
-find "$vendor_confdir" -type f -name '*.conf' -exec cat {} + > "$tmp"
-find "$confdir" -type f -name '*.conf' -exec cat {} + >> "$tmp"
+for signal in HUP INT TERM; do
+    trap 'rm -f -- "$tmp"; trap - "$signal"; kill -s "$signal" "$$"' "$signal"
+done
+
+find "$vendor_confdir" "$confdir" -type f -name '*.conf' -exec cat {} + > "$tmp"
 
 {
     printf '%s\n' "$marker"
 
+    # pacini merge sections https://github.com/andrewgregory/pacutils/issues/38
     pacini --section-list "$tmp" | sort -u | while read -r section; do
         printf '[%s]\n' "$section"
         pacini --section="$section" "$tmp" | sort -u
     done
 } > "$conf"
+
+rm -f -- "$tmp"
