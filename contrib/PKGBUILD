@@ -19,7 +19,7 @@ pkgver() {
 
 package() {
     cd "$srcdir/$_pkgname"
-    env PREFIX="$pkgdir/usr/local" make install install-hook
+    env PREFIX="$pkgdir/usr" make install install-hook
     mkdir --parents --mode=644 "$pkgdir"/etc/pacreport.d
 }
 
